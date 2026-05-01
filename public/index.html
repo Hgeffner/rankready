@@ -151,6 +151,276 @@ textarea { min-height: 80px; resize: vertical; }
 .modal-hint { font-size: 12px; color: #5a5a7a; }
 .modal-textarea { font-family: monospace; font-size: 12px; line-height: 1.6; padding: 14px; border: 1px solid #c8c8e8; border-radius: 4px; background: #f0f0ff; resize: none; flex: 1; min-height: 300px; outline: none; }
 .modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+<style>
+/* --- Progress Report Tab --- */
+#progress-report-tab { display: none; }
+#progress-report-tab.active { display: block; }
+
+.pr-section {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.pr-section h3 {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #00eaff;
+  margin: 0 0 16px 0;
+}
+
+.keyword-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+
+.keyword-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.keyword-table th {
+  background: rgba(0, 234, 255, 0.08);
+  color: #00eaff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0,234,255,0.2);
+}
+
+.keyword-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: #e0e0e0;
+  vertical-align: middle;
+}
+
+.keyword-table input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  color: #fff;
+  padding: 5px 8px;
+  width: 100%;
+  font-size: 13px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.keyword-table input:focus {
+  outline: none;
+  border-color: #00eaff;
+}
+
+.remove-row-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.3);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.remove-row-btn:hover { color: #ff2bd6; }
+
+.add-row-btn {
+  background: rgba(0, 234, 255, 0.08);
+  border: 1px dashed rgba(0, 234, 255, 0.35);
+  border-radius: 8px;
+  color: #00eaff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 4px;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+.add-row-btn:hover { background: rgba(0, 234, 255, 0.14); }
+
+/* Progress report output */
+.pr-output-section {
+  display: none;
+  margin-top: 28px;
+}
+
+.pr-output-section.visible { display: block; }
+
+.pr-output-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.pr-output-card .card-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #00eaff;
+  margin-bottom: 10px;
+}
+
+.pr-output-card .card-body {
+  color: #d8d8d8;
+  font-size: 14px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
+.pr-highlight-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.pr-highlight-card {
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.pr-highlight-card.win {
+  background: rgba(0, 234, 255, 0.06);
+  border-color: rgba(0, 234, 255, 0.2);
+}
+
+.pr-highlight-card.watch {
+  background: rgba(255, 42, 214, 0.06);
+  border-color: rgba(255, 42, 214, 0.2);
+}
+
+.pr-highlight-card .hl-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.pr-highlight-card.win .hl-label { color: #00eaff; }
+.pr-highlight-card.watch .hl-label { color: #ff2bd6; }
+
+.pr-highlight-card .hl-body {
+  font-size: 14px;
+  color: #e0e0e0;
+  line-height: 1.6;
+}
+
+.pr-keyword-results {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.pr-keyword-results .card-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #00eaff;
+  margin-bottom: 14px;
+}
+
+.results-keyword-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.results-keyword-table th {
+  background: rgba(0,234,255,0.07);
+  color: #00eaff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0,234,255,0.15);
+}
+
+.results-keyword-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: #d8d8d8;
+}
+
+.rank-change.up   { color: #00eaff; font-weight: 600; }
+.rank-change.down { color: #ff2bd6; font-weight: 600; }
+.rank-change.same { color: #888; }
+.rank-change.new  { color: #ff6a00; font-weight: 600; }
+
+.generate-pr-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #1e02ff, #ff2bd6);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  font-family: inherit;
+  transition: opacity 0.2s;
+}
+
+.generate-pr-btn:hover { opacity: 0.88; }
+.generate-pr-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.pr-download-btn {
+  width: 100%;
+  padding: 13px;
+  background: rgba(0, 234, 255, 0.1);
+  color: #00eaff;
+  border: 1px solid rgba(0, 234, 255, 0.3);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.pr-download-btn:hover { background: rgba(0, 234, 255, 0.18); }
+
+.pr-loading {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+  color: #aaa;
+}
+.pr-loading.visible { display: block; }
+.pr-loading .spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(0,234,255,0.2);
+  border-top-color: #00eaff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 14px;
+}
+</style>
+<!-- END INSERTION 1 OF 3 -->
 </style>
 </head>
 <body>
