@@ -151,9 +151,9 @@ textarea { min-height: 80px; resize: vertical; }
 .modal-hint { font-size: 12px; color: #5a5a7a; }
 .modal-textarea { font-family: monospace; font-size: 12px; line-height: 1.6; padding: 14px; border: 1px solid #c8c8e8; border-radius: 4px; background: #f0f0ff; resize: none; flex: 1; min-height: 300px; outline: none; }
 .modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
-<style>
-/* --- Progress Report Tab --- */
-#progress-report-tab { display: none; }
+
+/* Progress Report Tab */
+#progress-report-tab { display: none; padding: 24px 30px; background: #0a0a1a; }
 #progress-report-tab.active { display: block; }
 
 .pr-section {
@@ -163,7 +163,6 @@ textarea { min-height: 80px; resize: vertical; }
   padding: 24px;
   margin-bottom: 20px;
 }
-
 .pr-section h3 {
   font-size: 14px;
   font-weight: 600;
@@ -172,20 +171,29 @@ textarea { min-height: 80px; resize: vertical; }
   color: #00eaff;
   margin: 0 0 16px 0;
 }
-
-.keyword-table-wrapper {
-  overflow-x: auto;
-  margin-bottom: 12px;
-}
-
-.keyword-table {
+.pr-section input,
+.pr-section textarea,
+.pr-section select {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 6px;
+  color: #fff;
+  padding: 10px 13px;
+  font-size: 14px;
+  font-family: inherit;
   width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
 }
+.pr-section input::placeholder,
+.pr-section textarea::placeholder { color: rgba(255,255,255,0.3); }
+.pr-section input:focus,
+.pr-section textarea:focus { outline: none; border-color: #00eaff; }
+.pr-section label { color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; display: block; }
+.pr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
+.keyword-table-wrapper { overflow-x: auto; margin-bottom: 12px; }
+.keyword-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .keyword-table th {
-  background: rgba(0, 234, 255, 0.08);
+  background: rgba(0,234,255,0.08);
   color: #00eaff;
   font-weight: 600;
   text-transform: uppercase;
@@ -195,14 +203,7 @@ textarea { min-height: 80px; resize: vertical; }
   text-align: left;
   border-bottom: 1px solid rgba(0,234,255,0.2);
 }
-
-.keyword-table td {
-  padding: 8px 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  color: #e0e0e0;
-  vertical-align: middle;
-}
-
+.keyword-table td { padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
 .keyword-table input {
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.12);
@@ -212,30 +213,13 @@ textarea { min-height: 80px; resize: vertical; }
   width: 100%;
   font-size: 13px;
   font-family: inherit;
-  box-sizing: border-box;
 }
-
-.keyword-table input:focus {
-  outline: none;
-  border-color: #00eaff;
-}
-
-.remove-row-btn {
-  background: none;
-  border: none;
-  color: rgba(255,255,255,0.3);
-  font-size: 18px;
-  cursor: pointer;
-  padding: 0 4px;
-  line-height: 1;
-  transition: color 0.2s;
-}
-
+.keyword-table input:focus { outline: none; border-color: #00eaff; }
+.remove-row-btn { background: none; border: none; color: rgba(255,255,255,0.3); font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1; }
 .remove-row-btn:hover { color: #ff2bd6; }
-
 .add-row-btn {
-  background: rgba(0, 234, 255, 0.08);
-  border: 1px dashed rgba(0, 234, 255, 0.35);
+  background: rgba(0,234,255,0.08);
+  border: 1px dashed rgba(0,234,255,0.35);
   border-radius: 8px;
   color: #00eaff;
   font-size: 13px;
@@ -244,129 +228,9 @@ textarea { min-height: 80px; resize: vertical; }
   cursor: pointer;
   width: 100%;
   margin-top: 4px;
-  transition: background 0.2s;
   font-family: inherit;
 }
-
-.add-row-btn:hover { background: rgba(0, 234, 255, 0.14); }
-
-/* Progress report output */
-.pr-output-section {
-  display: none;
-  margin-top: 28px;
-}
-
-.pr-output-section.visible { display: block; }
-
-.pr-output-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 16px;
-}
-
-.pr-output-card .card-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #00eaff;
-  margin-bottom: 10px;
-}
-
-.pr-output-card .card-body {
-  color: #d8d8d8;
-  font-size: 14px;
-  line-height: 1.75;
-  white-space: pre-wrap;
-}
-
-.pr-highlight-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.pr-highlight-card {
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-.pr-highlight-card.win {
-  background: rgba(0, 234, 255, 0.06);
-  border-color: rgba(0, 234, 255, 0.2);
-}
-
-.pr-highlight-card.watch {
-  background: rgba(255, 42, 214, 0.06);
-  border-color: rgba(255, 42, 214, 0.2);
-}
-
-.pr-highlight-card .hl-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 8px;
-}
-
-.pr-highlight-card.win .hl-label { color: #00eaff; }
-.pr-highlight-card.watch .hl-label { color: #ff2bd6; }
-
-.pr-highlight-card .hl-body {
-  font-size: 14px;
-  color: #e0e0e0;
-  line-height: 1.6;
-}
-
-.pr-keyword-results {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 16px;
-}
-
-.pr-keyword-results .card-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #00eaff;
-  margin-bottom: 14px;
-}
-
-.results-keyword-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.results-keyword-table th {
-  background: rgba(0,234,255,0.07);
-  color: #00eaff;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  padding: 8px 12px;
-  text-align: left;
-  border-bottom: 1px solid rgba(0,234,255,0.15);
-}
-
-.results-keyword-table td {
-  padding: 8px 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  color: #d8d8d8;
-}
-
-.rank-change.up   { color: #00eaff; font-weight: 600; }
-.rank-change.down { color: #ff2bd6; font-weight: 600; }
-.rank-change.same { color: #888; }
-.rank-change.new  { color: #ff6a00; font-weight: 600; }
+.add-row-btn:hover { background: rgba(0,234,255,0.14); }
 
 .generate-pr-btn {
   width: 100%;
@@ -380,47 +244,61 @@ textarea { min-height: 80px; resize: vertical; }
   cursor: pointer;
   margin-top: 8px;
   font-family: inherit;
-  transition: opacity 0.2s;
 }
-
 .generate-pr-btn:hover { opacity: 0.88; }
 .generate-pr-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.pr-download-btn {
-  width: 100%;
-  padding: 13px;
-  background: rgba(0, 234, 255, 0.1);
-  color: #00eaff;
-  border: 1px solid rgba(0, 234, 255, 0.3);
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 12px;
-  font-family: inherit;
-  transition: background 0.2s;
-}
-
-.pr-download-btn:hover { background: rgba(0, 234, 255, 0.18); }
-
-.pr-loading {
-  display: none;
-  text-align: center;
-  padding: 40px 20px;
-  color: #aaa;
-}
+.pr-loading { display: none; text-align: center; padding: 40px 20px; color: #aaa; }
 .pr-loading.visible { display: block; }
-.pr-loading .spinner {
-  width: 36px;
-  height: 36px;
+.pr-loading .pr-spinner {
+  width: 36px; height: 36px;
   border: 3px solid rgba(0,234,255,0.2);
   border-top-color: #00eaff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto 14px;
 }
-</style>
-<!-- END INSERTION 1 OF 3 -->
+
+.pr-output-section { display: none; margin-top: 28px; }
+.pr-output-section.visible { display: block; }
+
+.pr-highlight-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.pr-highlight-card { border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); }
+.pr-highlight-card.win { background: rgba(0,234,255,0.06); border-color: rgba(0,234,255,0.2); }
+.pr-highlight-card.watch { background: rgba(255,42,214,0.06); border-color: rgba(255,42,214,0.2); }
+.hl-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+.pr-highlight-card.win .hl-label { color: #00eaff; }
+.pr-highlight-card.watch .hl-label { color: #ff2bd6; }
+.hl-body { font-size: 14px; color: #e0e0e0; line-height: 1.6; }
+
+.pr-output-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+.pr-output-card .card-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #00eaff; margin-bottom: 10px; }
+.pr-output-card .card-body { color: #d8d8d8; font-size: 14px; line-height: 1.75; white-space: pre-wrap; }
+
+.pr-keyword-results { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+.pr-keyword-results .card-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #00eaff; margin-bottom: 14px; }
+.results-keyword-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.results-keyword-table th { background: rgba(0,234,255,0.07); color: #00eaff; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(0,234,255,0.15); }
+.results-keyword-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #d8d8d8; }
+.rank-change.up   { color: #00eaff; font-weight: 600; }
+.rank-change.down { color: #ff2bd6; font-weight: 600; }
+.rank-change.same { color: #888; }
+.rank-change.new  { color: #ff6a00; font-weight: 600; }
+
+.pr-download-btn {
+  width: 100%;
+  padding: 13px;
+  background: rgba(0,234,255,0.1);
+  color: #00eaff;
+  border: 1px solid rgba(0,234,255,0.3);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  font-family: inherit;
+}
+.pr-download-btn:hover { background: rgba(0,234,255,0.18); }
 </style>
 </head>
 <body>
@@ -523,6 +401,7 @@ textarea { min-height: 80px; resize: vertical; }
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('audit', this)">SEO Audit Report</button>
       <button class="tab-btn" id="contentTabBtn" onclick="switchTab('content', this)">Content Generator</button>
+      <button class="tab-btn" onclick="switchTab('progress', this)">Progress Report</button>
     </div>
 
     <!-- Audit tab -->
@@ -551,6 +430,123 @@ textarea { min-height: 80px; resize: vertical; }
         </div>
       </div>
     </div>
+
+    <!-- Progress Report tab -->
+    <div id="progress-report-tab">
+
+      <div class="pr-section">
+        <h3>Client Info</h3>
+        <div class="pr-grid">
+          <div>
+            <label>Client Name</label>
+            <input type="text" id="pr-client-name" placeholder="e.g. FACT Professional">
+          </div>
+          <div>
+            <label>Website URL</label>
+            <input type="text" id="pr-client-url" placeholder="e.g. factprofessional.com">
+          </div>
+          <div>
+            <label>Report Month</label>
+            <input type="text" id="pr-report-month" placeholder="e.g. April 2025">
+          </div>
+        </div>
+      </div>
+
+      <div class="pr-section">
+        <h3>Keyword Rankings (from Google Search Console)</h3>
+        <p style="font-size:13px;color:rgba(255,255,255,0.4);margin:0 0 14px 0;">Enter the keywords you're tracking. Previous Rank = last month. Current Rank = this month.</p>
+        <div class="keyword-table-wrapper">
+          <table class="keyword-table">
+            <thead>
+              <tr>
+                <th>Keyword</th>
+                <th>Prev Rank</th>
+                <th>Curr Rank</th>
+                <th>Clicks</th>
+                <th>Impressions</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="keyword-rows"></tbody>
+          </table>
+        </div>
+        <button class="add-row-btn" onclick="addKeywordRow()">+ Add Keyword</button>
+      </div>
+
+      <div class="pr-section">
+        <h3>Work Completed This Month</h3>
+        <textarea id="pr-work-completed" rows="5" placeholder="List the work done this month — published pages, optimized titles, built links, technical fixes, etc."></textarea>
+      </div>
+
+      <div class="pr-section">
+        <h3>Planned Work for Next Month</h3>
+        <textarea id="pr-next-steps" rows="4" placeholder="What's on deck for next month?"></textarea>
+      </div>
+
+      <div class="pr-section">
+        <h3>Additional Notes (optional)</h3>
+        <textarea id="pr-notes" rows="3" placeholder="Any context, caveats, or highlights to flag for the client?"></textarea>
+      </div>
+
+      <button class="generate-pr-btn" id="generate-pr-btn" onclick="generateProgressReport()">Generate Progress Report</button>
+
+      <div class="pr-loading" id="pr-loading">
+        <div class="pr-spinner"></div>
+        <p>Writing your progress report...</p>
+      </div>
+
+      <div class="pr-output-section" id="pr-output-section">
+        <div class="pr-highlight-row">
+          <div class="pr-highlight-card win">
+            <div class="hl-label">Top Win This Month</div>
+            <div class="hl-body" id="pr-top-win"></div>
+          </div>
+          <div class="pr-highlight-card watch">
+            <div class="hl-label">Watch Item</div>
+            <div class="hl-body" id="pr-watch-item"></div>
+          </div>
+        </div>
+        <div class="pr-output-card">
+          <div class="card-label">Executive Summary</div>
+          <div class="card-body" id="pr-exec-summary"></div>
+        </div>
+        <div class="pr-keyword-results" id="pr-keyword-results-section">
+          <div class="card-label">Keyword Rankings</div>
+          <table class="results-keyword-table">
+            <thead>
+              <tr>
+                <th>Keyword</th>
+                <th>Previous</th>
+                <th>Current</th>
+                <th>Change</th>
+                <th>Clicks</th>
+                <th>Impressions</th>
+              </tr>
+            </thead>
+            <tbody id="pr-keyword-results-body"></tbody>
+          </table>
+        </div>
+        <div class="pr-output-card">
+          <div class="card-label">Keyword Analysis</div>
+          <div class="card-body" id="pr-keyword-insights"></div>
+        </div>
+        <div class="pr-output-card">
+          <div class="card-label">Traffic Insights</div>
+          <div class="card-body" id="pr-traffic-insights"></div>
+        </div>
+        <div class="pr-output-card">
+          <div class="card-label">Work Completed</div>
+          <div class="card-body" id="pr-work-summary"></div>
+        </div>
+        <div class="pr-output-card">
+          <div class="card-label">Looking Ahead</div>
+          <div class="card-body" id="pr-looking-ahead"></div>
+        </div>
+        <button class="pr-download-btn" onclick="downloadProgressReportPDF()">Download PDF Report</button>
+      </div>
+
+    </div>
+
   </div>
 
 </div>
@@ -588,6 +584,8 @@ let currentStepIdx = 0;
 let doneSteps = [];
 let genIdx = null;
 let expandedIdx = null;
+let prReportData = null;
+let keywordRowCount = 0;
 
 // Step animation
 function startSteps(bizName) {
@@ -660,7 +658,6 @@ function renderReport(r, scrapeSuccess) {
   document.getElementById("loadingSection").style.display = "none";
   document.getElementById("reportSection").style.display = "block";
 
-  // Scrape badge
   const badge = document.getElementById("scrapeBadge");
   badge.innerHTML = scrapeSuccess
     ? '<div class="scrape-badge success">Website successfully scraped - audit based on real data</div>'
@@ -720,6 +717,7 @@ function switchTab(tab, btn) {
   if (btn) btn.classList.add("active");
   document.getElementById("auditTab").style.display = tab === "audit" ? "block" : "none";
   document.getElementById("contentTab").style.display = tab === "content" ? "block" : "none";
+  document.getElementById("progress-report-tab").style.display = tab === "progress" ? "block" : "none";
 }
 
 // Content cards
@@ -803,7 +801,6 @@ async function generateContent(i) {
     contentData[ct.id] = data.data;
     expandedIdx = i;
 
-    // Update badge count
     const count = Object.keys(contentData).length;
     document.getElementById("contentTabBtn").innerHTML =
       `Content Generator<span class="tab-badge">${count}</span>`;
@@ -839,7 +836,6 @@ function copyJSON(i) {
   document.body.removeChild(ta);
 }
 
-// Plain text report
 function buildPlainText(r) {
   return [
     "SEO AUDIT REPORT -- " + r.bizName,
@@ -869,7 +865,7 @@ function closeModal() {
   document.getElementById("modalOverlay").classList.remove("show");
 }
 
-// PDF
+// Audit PDF
 async function downloadPDF() {
   if (!currentReport) return;
   const errEl = document.getElementById("pdfError");
@@ -999,6 +995,265 @@ function resetForm() {
   document.getElementById("contentTabBtn").textContent = "Content Generator";
   switchTab("audit", document.querySelector(".tab-btn"));
 }
+
+// Progress Report
+function addKeywordRow() {
+  const tbody = document.getElementById("keyword-rows");
+  const id = keywordRowCount++;
+  const tr = document.createElement("tr");
+  tr.id = "krow-" + id;
+  tr.innerHTML = `
+    <td><input type="text" placeholder="e.g. personal injury lawyer valencia" data-field="keyword"></td>
+    <td><input type="number" placeholder="14" min="1" max="100" data-field="prevRank"></td>
+    <td><input type="number" placeholder="9" min="1" max="100" data-field="currRank"></td>
+    <td><input type="number" placeholder="0" min="0" data-field="clicks"></td>
+    <td><input type="number" placeholder="0" min="0" data-field="impressions"></td>
+    <td><button class="remove-row-btn" onclick="removeKeywordRow('krow-${id}')">&times;</button></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function removeKeywordRow(id) {
+  const row = document.getElementById(id);
+  if (row) row.remove();
+}
+
+function getKeywordData() {
+  const rows = document.querySelectorAll("#keyword-rows tr");
+  const keywords = [];
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll("input");
+    const keyword = inputs[0].value.trim();
+    if (!keyword) return;
+    keywords.push({
+      keyword,
+      prevRank: inputs[1].value ? parseInt(inputs[1].value) : null,
+      currRank: inputs[2].value ? parseInt(inputs[2].value) : null,
+      clicks: inputs[3].value ? parseInt(inputs[3].value) : 0,
+      impressions: inputs[4].value ? parseInt(inputs[4].value) : 0
+    });
+  });
+  return keywords;
+}
+
+async function generateProgressReport() {
+  const clientName = document.getElementById("pr-client-name").value.trim();
+  const clientUrl = document.getElementById("pr-client-url").value.trim();
+  const reportMonth = document.getElementById("pr-report-month").value.trim();
+
+  if (!clientName || !reportMonth) {
+    alert("Please enter at least a client name and report month.");
+    return;
+  }
+
+  const keywords = getKeywordData();
+  const workCompleted = document.getElementById("pr-work-completed").value.trim();
+  const nextSteps = document.getElementById("pr-next-steps").value.trim();
+  const additionalNotes = document.getElementById("pr-notes").value.trim();
+
+  document.getElementById("generate-pr-btn").disabled = true;
+  document.getElementById("pr-loading").classList.add("visible");
+  document.getElementById("pr-output-section").classList.remove("visible");
+
+  try {
+    const response = await fetch("/api/progress-report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ clientName, clientUrl, reportMonth, keywords, workCompleted, nextSteps, additionalNotes })
+    });
+
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error || "Unknown error");
+
+    prReportData = data;
+    renderProgressReport(data);
+
+  } catch (err) {
+    alert("Something went wrong generating the report: " + err.message);
+    console.error(err);
+  } finally {
+    document.getElementById("generate-pr-btn").disabled = false;
+    document.getElementById("pr-loading").classList.remove("visible");
+  }
+}
+
+function renderProgressReport(data) {
+  document.getElementById("pr-top-win").textContent = data.topWin || "";
+  document.getElementById("pr-watch-item").textContent = data.watchItem || "";
+  document.getElementById("pr-exec-summary").textContent = data.executiveSummary || "";
+  document.getElementById("pr-keyword-insights").textContent = data.keywordInsights || "";
+  document.getElementById("pr-traffic-insights").textContent = data.trafficInsights || "";
+  document.getElementById("pr-work-summary").textContent = data.workSummary || "";
+  document.getElementById("pr-looking-ahead").textContent = data.lookingAhead || "";
+
+  const tbody = document.getElementById("pr-keyword-results-body");
+  tbody.innerHTML = "";
+
+  if (data.keywords && data.keywords.length > 0) {
+    document.getElementById("pr-keyword-results-section").style.display = "block";
+    data.keywords.forEach(k => {
+      const change = (k.prevRank && k.currRank) ? k.prevRank - k.currRank : null;
+      let changeClass = "same", changeText = "—";
+      if (change === null && k.currRank) { changeClass = "new"; changeText = "New"; }
+      else if (change > 0) { changeClass = "up"; changeText = "+" + change; }
+      else if (change < 0) { changeClass = "down"; changeText = String(change); }
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${k.keyword}</td>
+        <td>${k.prevRank || "—"}</td>
+        <td>${k.currRank || "—"}</td>
+        <td><span class="rank-change ${changeClass}">${changeText}</span></td>
+        <td>${k.clicks || 0}</td>
+        <td>${k.impressions || 0}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } else {
+    document.getElementById("pr-keyword-results-section").style.display = "none";
+  }
+
+  document.getElementById("pr-output-section").classList.add("visible");
+  document.getElementById("pr-output-section").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function downloadProgressReportPDF() {
+  if (!prReportData) return;
+  const d = prReportData;
+  const JsPDF = window.jspdf.jsPDF;
+  const doc = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const pageW = 210, pageH = 297, margin = 18, contentW = pageW - margin * 2;
+  let y = 0;
+
+  const blue    = [30, 2, 255];
+  const cyan    = [0, 234, 255];
+  const magenta = [255, 43, 214];
+  const dark    = [18, 18, 28];
+  const white   = [255, 255, 255];
+  const light   = [220, 220, 230];
+  const muted   = [160, 160, 175];
+
+  function checkPageBreak(needed) {
+    if (y + needed > pageH - 20) { doc.addPage(); addFooter(); y = 20; }
+  }
+
+  function addFooter() {
+    doc.setFillColor(...dark);
+    doc.rect(0, pageH - 12, pageW, 12, "F");
+    doc.setFontSize(8); doc.setTextColor(...muted); doc.setFont("helvetica", "normal");
+    doc.text("Spark Social Creative  |  sparksocialcreative.com  |  Confidential", pageW / 2, pageH - 4.5, { align: "center" });
+  }
+
+  function sectionHeader(title) {
+    checkPageBreak(14);
+    doc.setFillColor(0, 40, 50);
+    doc.roundedRect(margin, y, contentW, 9, 2, 2, "F");
+    doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(...cyan);
+    doc.text(title.toUpperCase(), margin + 4, y + 6);
+    y += 13;
+  }
+
+  function bodyText(text) {
+    const lines = doc.splitTextToSize(text || "", contentW);
+    lines.forEach(line => {
+      checkPageBreak(6);
+      doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(...light);
+      doc.text(line, margin, y); y += 5.5;
+    });
+    y += 2;
+  }
+
+  // Cover page
+  doc.setFillColor(...dark); doc.rect(0, 0, pageW, pageH, "F");
+  doc.setFillColor(...blue); doc.rect(0, 0, pageW, 52, "F");
+  doc.setFillColor(...magenta); doc.rect(pageW * 0.55, 0, pageW * 0.45, 52, "F");
+
+  doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(...white);
+  doc.text("SPARK SOCIAL CREATIVE", margin, 22);
+  doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(200, 200, 220);
+  doc.text("Monthly SEO Progress Report", margin, 30);
+
+  doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.setTextColor(...white);
+  doc.text(d.clientName || "Client Report", margin, 80);
+  doc.setFontSize(13); doc.setFont("helvetica", "normal"); doc.setTextColor(...cyan);
+  doc.text(d.reportMonth || "", margin, 91);
+  if (d.clientUrl) { doc.setFontSize(10); doc.setTextColor(...muted); doc.text(d.clientUrl, margin, 100); }
+
+  const cardY = 118;
+  doc.setFillColor(0, 40, 60); doc.roundedRect(margin, cardY, (contentW / 2) - 4, 36, 3, 3, "F");
+  doc.setDrawColor(...cyan); doc.setLineWidth(0.4); doc.roundedRect(margin, cardY, (contentW / 2) - 4, 36, 3, 3, "S");
+  doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(...cyan);
+  doc.text("TOP WIN THIS MONTH", margin + 4, cardY + 8);
+  doc.setFontSize(9.5); doc.setFont("helvetica", "normal"); doc.setTextColor(...white);
+  doc.splitTextToSize(d.topWin || "", (contentW / 2) - 12).slice(0, 3).forEach((l, i) => doc.text(l, margin + 4, cardY + 16 + i * 6));
+
+  const watchX = margin + (contentW / 2) + 4;
+  doc.setFillColor(50, 10, 40); doc.roundedRect(watchX, cardY, (contentW / 2) - 4, 36, 3, 3, "F");
+  doc.setDrawColor(...magenta); doc.roundedRect(watchX, cardY, (contentW / 2) - 4, 36, 3, 3, "S");
+  doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(...magenta);
+  doc.text("WATCH ITEM", watchX + 4, cardY + 8);
+  doc.setFontSize(9.5); doc.setFont("helvetica", "normal"); doc.setTextColor(...white);
+  doc.splitTextToSize(d.watchItem || "", (contentW / 2) - 12).slice(0, 3).forEach((l, i) => doc.text(l, watchX + 4, cardY + 16 + i * 6));
+
+  addFooter();
+
+  // Report pages
+  doc.addPage();
+  doc.setFillColor(...dark); doc.rect(0, 0, pageW, pageH, "F");
+  addFooter();
+  y = 18;
+
+  doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(...muted);
+  doc.text((d.clientName || "") + "  |  " + (d.reportMonth || ""), margin, y);
+  y += 12;
+
+  sectionHeader("Executive Summary"); bodyText(d.executiveSummary);
+
+  if (d.keywords && d.keywords.length > 0) {
+    checkPageBreak(20);
+    sectionHeader("Keyword Rankings");
+    const colW = [70, 20, 20, 22, 18, 24];
+    const headers = ["Keyword", "Prev", "Current", "Change", "Clicks", "Impressions"];
+    doc.setFillColor(0, 50, 65); doc.rect(margin, y, contentW, 8, "F");
+    let cx = margin + 2;
+    headers.forEach((h, i) => {
+      doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(...cyan);
+      doc.text(h, cx, y + 5.5); cx += colW[i];
+    });
+    y += 9;
+    d.keywords.forEach((k, idx) => {
+      checkPageBreak(8);
+      if (idx % 2 === 0) { doc.setFillColor(28, 28, 40); doc.rect(margin, y - 1, contentW, 7.5, "F"); }
+      const change = (k.prevRank && k.currRank) ? k.prevRank - k.currRank : null;
+      let changeText = "—", changeColor = muted;
+      if (change === null && k.currRank) { changeText = "New"; changeColor = [255, 106, 0]; }
+      else if (change > 0) { changeText = "+" + change; changeColor = [0, 234, 255]; }
+      else if (change < 0) { changeText = String(change); changeColor = [255, 43, 214]; }
+      const vals = [k.keyword, k.prevRank || "—", k.currRank || "—", changeText, k.clicks || 0, k.impressions || 0];
+      cx = margin + 2;
+      vals.forEach((v, i) => {
+        doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(...(i === 3 ? changeColor : light));
+        doc.text(String(v).slice(0, 30), cx, y + 5); cx += colW[i];
+      });
+      y += 7.5;
+    });
+    y += 6;
+  }
+
+  sectionHeader("Keyword Analysis"); bodyText(d.keywordInsights);
+  sectionHeader("Traffic Insights"); bodyText(d.trafficInsights);
+  sectionHeader("Work Completed This Month"); bodyText(d.workSummary);
+  sectionHeader("Looking Ahead"); bodyText(d.lookingAhead);
+
+  const safeName = (d.clientName || "client").replace(/\s+/g, "-").toLowerCase();
+  const safeMonth = (d.reportMonth || "report").replace(/\s+/g, "-").toLowerCase();
+  doc.save("spark-social-seo-report-" + safeName + "-" + safeMonth + ".pdf");
+}
+
+// Initialize keyword rows
+addKeywordRow();
+addKeywordRow();
+addKeywordRow();
 </script>
 </body>
 </html>
