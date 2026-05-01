@@ -275,6 +275,95 @@ app.post("/api/content", async (req, res) => {
   }
 });
 
+// ============================================================
+// ADD THIS BLOCK TO server.js
+// Paste it right after your existing /api/content endpoint
+// (before the final app.listen line)
+// ============================================================
+
+app.post('/api/progress-report', async (req, res) => {
+  const {
+    clientName,
+    clientUrl,
+    reportMonth,
+    keywords,       // array of { keyword, prevRank, currRank, clicks, impressions }
+    workCompleted,
+    nextSteps,
+    additionalNotes
+  } = req.body;
+
+  try {
+    // Build a readable keyword table for the prompt
+    const keywordTable = keywords && keywords.length > 0
+      ? keywords.map(k => {
+          const change = k.prevRank && k.currRank
+            ? k.prevRank - k.currRank  // positive = improvement
+            : null;
+          const trend = change === null ? 'New' : change > 0 ? `+${change}` : `${change}`;
+          return `- "${k.keyword}": Position ${k.currRank} (was ${k.prevRank || 'N/A'}, change: ${trend}) | Clicks: ${k.clicks || 0} | Impressions: ${k.impressions || 0}`;
+        }).join('\n')
+      : 'No keyword data provided.';
+
+    const prompt = `You are writing a monthly SEO progress report for a digital marketing agency called Spark Social Creative. The report is for their client.
+
+Client: ${clientName}
+Website: ${clientUrl}
+Report Month: ${reportMonth}
+
+KEYWORD RANKINGS THIS MONTH:
+${keywordTable}
+
+WORK COMPLETED THIS MONTH:
+${workCompleted || 'Not provided'}
+
+PLANNED WORK FOR NEXT MONTH:
+${nextSteps || 'Not provided'}
+
+ADDITIONAL NOTES:
+${additionalNotes || 'None'}
+
+Write a professional, client-ready monthly SEO progress report. Use a warm but authoritative tone. Be specific — reference actual keywords and numbers from the data above. Do not make up any data that was not provided.
+
+Return your response as a valid JSON object with exactly these fields:
+{
+  "executiveSummary": "2-3 paragraph overview of the month — wins, challenges, and overall trajectory. Reference specific keywords.",
+  "keywordInsights": "2-3 paragraphs analyzing the keyword ranking changes in detail. Call out biggest movers, any drops to watch, and what the trends suggest.",
+  "trafficInsights": "1-2 paragraphs on click and impression trends based on the GSC data provided. If data is limited, acknowledge that and keep it brief.",
+  "workSummary": "A clean, polished version of the work completed — written in professional client-facing language, not internal notes.",
+  "lookingAhead": "A forward-looking paragraph about next month's planned work and what success looks like.",
+  "topWin": "One sentence — the single biggest win this month. Keep it punchy.",
+  "watchItem": "One sentence — one thing to keep an eye on heading into next month."
+}`;
+
+    const message = await anthropic.messages.create({
+      model: 'claude-opus-4-5',
+      max_tokens: 3000,
+      messages: [{ role: 'user', content: prompt }]
+    });
+
+    let rawText = message.content[0].text.trim();
+
+    // Strip markdown code fences if present
+    rawText = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+
+    const reportData = JSON.parse(rawText);
+
+    res.json({
+      success: true,
+      clientName,
+      clientUrl,
+      reportMonth,
+      keywords,
+      workCompleted,
+      nextSteps,
+      ...reportData
+    });
+
+  } catch (err) {
+    console.error('Progress report error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`RankReady server running on port ${PORT}`);
