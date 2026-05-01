@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RankReady - AI SEO Audit Tool</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, sans-serif; background: #f0f0ff; color: #0a0a1a; min-height: 100vh; }
+
+/* Header */
+.header { background: #0a0a1a; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: Georgia, serif; font-size: 22px; color: #fff; font-weight: 700; }
+.logo span { color: #00eaff; }
+.badge { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #555; background: #14142a; padding: 5px 10px; border-radius: 2px; }
+
+/* Main */
+.main { max-width: 780px; margin: 0 auto; padding: 0 24px 60px; }
+
+/* Hero */
+.hero { padding: 48px 0 32px; }
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #1e02ff; margin-bottom: 12px; }
+.h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.1; letter-spacing: -.02em; margin-bottom: 14px; }
+.sub { font-size: 15px; color: #5a5a7a; line-height: 1.6; max-width: 520px; }
+
+/* Card */
+.card { background: #fff; border: 1px solid #c8c8e8; border-radius: 6px; padding: 32px; }
+.card-title { font-family: Georgia, serif; font-size: 18px; font-weight: 700; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e8e8ff; }
+
+/* Form */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.full { grid-column: 1 / -1; }
+label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #5a5a7a; margin-bottom: 5px; display: block; }
+input, select, textarea { font-family: system-ui; font-size: 14px; padding: 10px 13px; border: 1px solid #c8c8e8; border-radius: 4px; background: #f0f0ff; color: #0a0a1a; width: 100%; outline: none; }
+textarea { min-height: 80px; resize: vertical; }
+
+/* Buttons */
+.btn-primary { background: #1e02ff; color: #fff; border: none; padding: 12px 28px; font-family: system-ui; font-size: 14px; font-weight: 700; border-radius: 4px; cursor: pointer; }
+.btn-secondary { background: transparent; border: 1px solid #c8c8e8; padding: 9px 18px; font-family: system-ui; font-size: 13px; font-weight: 500; border-radius: 4px; cursor: pointer; color: #0a0a1a; }
+.btn-dark { background: #0a0a1a; color: #fff; border: none; padding: 9px 20px; font-family: system-ui; font-size: 13px; font-weight: 700; border-radius: 4px; cursor: pointer; }
+.form-actions { display: flex; align-items: center; gap: 20px; margin-top: 24px; }
+.hint { font-size: 12px; color: #5a5a7a; line-height: 1.5; }
+
+/* Error */
+.error-box { background: #ffe0f9; border: 1px solid #ff2bd6; border-radius: 4px; padding: 12px 16px; font-size: 13px; color: #990077; margin-top: 14px; display: none; }
+
+/* Loading */
+.loading { display: none; padding-top: 60px; text-align: center; }
+.spinner { width: 36px; height: 36px; border-radius: 50%; border: 3px solid #e0e0ff; border-top-color: #1e02ff; animation: spin .85s linear infinite; margin: 0 auto 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-title { font-family: Georgia, serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.loading-sub { font-size: 13px; color: #5a5a7a; margin-bottom: 28px; }
+.steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.step { font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 20px; border: 1px solid #c8c8e8; color: #5a5a7a; transition: all .3s; }
+.step.active { border-color: #1e02ff; background: #e0e0ff; color: #1e02ff; font-weight: 700; }
+.step.done { border-color: #006644; background: #ccffee; color: #006644; }
+
+/* Scrape badge */
+.scrape-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 16px; }
+.scrape-badge.success { background: #ccffee; color: #006644; border: 1px solid #006644; }
+.scrape-badge.failed { background: #fff8cc; color: #b8a000; border: 1px solid #b8a000; }
+
+/* Report */
+.report-section { display: none; padding-top: 32px; }
+.report-header { background: #0a0a1a; color: #fff; padding: 26px 30px; display: flex; justify-content: space-between; align-items: flex-start; }
+.report-biz { font-family: Georgia, serif; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+.report-url { font-size: 13px; color: #888; }
+.report-meta { font-size: 12px; color: #555; margin-top: 4px; }
+.score-num { font-family: Georgia, serif; font-size: 46px; font-weight: 700; line-height: 1; }
+.score-label-text { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #8888bb; margin-top: 4px; }
+.score-grade { font-size: 12px; font-weight: 700; margin-top: 4px; }
+.report-date { font-size: 11px; color: #555; margin-top: 10px; text-align: right; }
+
+.report-body { background: #fff; border: 1px solid #c8c8e8; border-top: none; }
+
+/* Tabs */
+.tabs { display: flex; border-bottom: 2px solid #c8c8e8; }
+.tab-btn { padding: 11px 24px; font-family: system-ui; font-size: 13px; font-weight: 500; border: none; background: transparent; cursor: pointer; color: #5a5a7a; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; }
+.tab-btn.active { font-weight: 700; color: #1e02ff; border-bottom-color: #1e02ff; }
+.tab-badge { margin-left: 8px; background: #1e02ff; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; vertical-align: middle; }
+
+/* Section block */
+.section-block { padding: 22px 30px; border-bottom: 1px solid #e8e8ff; }
+.section-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.section-num { width: 28px; height: 28px; border-radius: 3px; background: #1e02ff; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.section-title { font-family: Georgia, serif; font-size: 16px; font-weight: 700; color: #0a0a1a; }
+.body-text { font-size: 13px; line-height: 1.8; color: #12121e; white-space: pre-wrap; }
+
+/* Tags */
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 3px; display: inline-block; }
+.tag-red { background: #ffe0f9; color: #cc00aa; }
+.tag-yellow { background: #fff8cc; color: #b8a000; }
+.tag-green { background: #ccffee; color: #006644; }
+
+/* Actions */
+.action-items { display: flex; flex-direction: column; gap: 10px; }
+.action-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; background: #f0f0ff; border-radius: 4px; border-left: 3px solid #1e02ff; font-size: 13px; line-height: 1.6; }
+.action-num { font-weight: 700; color: #1e02ff; min-width: 18px; }
+
+/* Report action buttons */
+.report-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.pdf-error { background: #ffe0f9; border: 1px solid #ff2bd6; border-radius: 4px; padding: 12px 16px; font-size: 13px; color: #990077; margin-top: 10px; display: none; }
+
+/* Content generator */
+.content-tab { padding-top: 24px; }
+.content-header { margin-bottom: 20px; }
+.content-header h3 { font-family: Georgia, serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.content-header p { font-size: 14px; color: #5a5a7a; line-height: 1.6; }
+.content-error { background: #ffe0f9; border: 1px solid #ff2bd6; border-radius: 4px; padding: 12px 16px; font-size: 13px; color: #990077; margin-bottom: 16px; display: none; }
+.content-cards { display: flex; flex-direction: column; gap: 12px; }
+.content-card { background: #fff; border: 1px solid #c8c8e8; border-radius: 6px; overflow: hidden; }
+.content-card.ready { border-color: #1e02ff; }
+.content-card-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; }
+.content-card-header.white { background: #fff; }
+.content-card-header.tinted { background: #f0f0ff; }
+.content-card-info { display: flex; align-items: center; gap: 12px; }
+.content-card-num { width: 28px; height: 28px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+.content-card-num.ready { background: #1e02ff; color: #fff; }
+.content-card-num.pending { background: #e8e8ff; color: #1e02ff; }
+.content-card-label { font-weight: 700; font-size: 14px; color: #0a0a1a; }
+.content-card-desc { font-size: 12px; color: #5a5a7a; }
+.content-card-actions { display: flex; gap: 8px; align-items: center; }
+.ready-badge { font-size: 11px; font-weight: 700; color: #006644; background: #ccffee; padding: 3px 9px; border-radius: 10px; }
+.btn-generate { background: #1e02ff; color: #fff; border: none; padding: 7px 16px; font-family: system-ui; font-size: 12px; font-weight: 700; border-radius: 4px; cursor: pointer; }
+.btn-generate.outline { background: transparent; color: #1e02ff; border: 1px solid #1e02ff; }
+.btn-generate:disabled { opacity: .5; cursor: not-allowed; }
+.mini-spinner { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #e0e0ff; border-top-color: #1e02ff; animation: spin .85s linear infinite; }
+.expand-icon { font-size: 13px; color: #5a5a7a; }
+.content-card-body { padding: 0 20px 20px; }
+.divider { height: 1px; background: #c8c8e8; margin: 0 0 16px; }
+.field-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #5a5a7a; margin-bottom: 5px; }
+.field-box { font-size: 13px; line-height: 1.7; color: #12121e; background: #f0f0ff; border: 1px solid #c8c8e8; border-radius: 4px; padding: 10px 13px; white-space: pre-wrap; }
+.field-box.scroll { max-height: 300px; overflow-y: auto; }
+.meta-page { background: #f0f0ff; border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; }
+.meta-page-name { font-weight: 700; font-size: 13px; color: #1e02ff; margin-bottom: 8px; }
+.faq-item { background: #f0f0ff; border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; }
+.faq-q { font-weight: 700; font-size: 13px; color: #1e02ff; margin-bottom: 6px; }
+.faq-a { font-size: 13px; line-height: 1.6; }
+.copy-btn { margin-top: 14px; }
+.content-bottom { display: flex; gap: 10px; margin-top: 20px; }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+.modal-overlay.show { display: flex; }
+.modal { background: #fff; border-radius: 8px; padding: 28px; width: 100%; max-width: 640px; max-height: 80vh; display: flex; flex-direction: column; gap: 14px; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; }
+.modal-title { font-family: Georgia, serif; font-size: 18px; font-weight: 700; }
+.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #5a5a7a; }
+.modal-hint { font-size: 12px; color: #5a5a7a; }
+.modal-textarea { font-family: monospace; font-size: 12px; line-height: 1.6; padding: 14px; border: 1px solid #c8c8e8; border-radius: 4px; background: #f0f0ff; resize: none; flex: 1; min-height: 300px; outline: none; }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Rank<span>Ready</span></div>
+  <div class="badge">AI SEO Audit Tool</div>
+</div>
+
+<div class="main">
+
+  <!-- FORM -->
+  <div id="formSection">
+    <div class="hero">
+      <div class="eyebrow">Local Business SEO</div>
+      <div class="h1">Generate a full SEO audit<br><em>in under a minute</em></div>
+      <div class="sub">Enter your client's details. RankReady reads their actual website and produces a professional written report you can send directly.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Client Information</div>
+      <div class="grid">
+        <div>
+          <label>Business Name</label>
+          <input type="text" id="bizName" placeholder="e.g. Maria's Hair Salon">
+        </div>
+        <div>
+          <label>Industry / Type</label>
+          <select id="bizType">
+            <option value="">Select type...</option>
+            <option>Restaurant / Cafe</option>
+            <option>Hair Salon / Barbershop</option>
+            <option>Nail Salon / Spa</option>
+            <option>General Contractor</option>
+            <option>Plumber</option>
+            <option>Electrician</option>
+            <option>HVAC / AC Repair</option>
+            <option>Landscaping / Lawn Care</option>
+            <option>Auto Repair / Mechanic</option>
+            <option>Dentist / Dental Office</option>
+            <option>Chiropractor</option>
+            <option>Real Estate Agent</option>
+            <option>Law Firm / Attorney</option>
+            <option>Cleaning Service</option>
+            <option>Pet Grooming</option>
+            <option>Other Local Business</option>
+          </select>
+        </div>
+        <div>
+          <label>Website URL</label>
+          <input type="text" id="bizUrl" placeholder="e.g. https://mariashairsalon.com">
+        </div>
+        <div>
+          <label>City / Location</label>
+          <input type="text" id="bizCity" placeholder="e.g. Austin, TX">
+        </div>
+        <div class="full">
+          <label>About the Business (optional)</label>
+          <textarea id="bizDesc" placeholder="e.g. Family-owned, 8 years in business, main competitors are Great Clips and local salons on Yelp."></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" onclick="runAudit()">Run SEO Audit</button>
+        <span class="hint">Takes ~30-60 seconds<br>Reads the actual website + generates full report</span>
+      </div>
+      <div class="error-box" id="errorBox"></div>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading" id="loadingSection">
+    <div class="card">
+      <div class="spinner"></div>
+      <div class="loading-title" id="loadingTitle">Analyzing...</div>
+      <div class="loading-sub">Reading the website and running SEO analysis</div>
+      <div class="steps" id="stepsContainer"></div>
+    </div>
+  </div>
+
+  <!-- REPORT -->
+  <div class="report-section" id="reportSection">
+    <div id="scrapeBadge"></div>
+
+    <div class="report-header">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#555;margin-bottom:8px">SEO Audit Report</div>
+        <div class="report-biz" id="rptBizName"></div>
+        <div class="report-url" id="rptUrl"></div>
+        <div class="report-meta" id="rptMeta"></div>
+      </div>
+      <div style="text-align:right">
+        <div class="score-num" id="rptScore"></div>
+        <div class="score-label-text">SEO Score</div>
+        <div class="score-grade" id="rptGrade"></div>
+        <div class="report-date" id="rptDate"></div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('audit', this)">SEO Audit Report</button>
+      <button class="tab-btn" id="contentTabBtn" onclick="switchTab('content', this)">Content Generator</button>
+    </div>
+
+    <!-- Audit tab -->
+    <div id="auditTab">
+      <div class="report-body" id="reportBody"></div>
+      <div class="report-actions">
+        <button class="btn-secondary" onclick="openModal()">View and Copy Report</button>
+        <button class="btn-secondary" onclick="downloadPDF()">Download PDF</button>
+        <button class="btn-dark" onclick="resetForm()">+ New Audit</button>
+      </div>
+      <div class="pdf-error" id="pdfError"></div>
+    </div>
+
+    <!-- Content tab -->
+    <div id="contentTab" style="display:none">
+      <div class="content-tab">
+        <div class="content-header">
+          <h3>Content Generator</h3>
+          <p>Generate SEO-optimized content based on the audit findings.</p>
+        </div>
+        <div class="content-error" id="contentError"></div>
+        <div class="content-cards" id="contentCards"></div>
+        <div class="content-bottom">
+          <button class="btn-dark" onclick="switchTab('audit', document.querySelector('.tab-btn'))">Back to Audit</button>
+          <button class="btn-secondary" onclick="resetForm()">+ New Audit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Copy Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Report Text</div>
+      <button class="modal-close" onclick="closeModal()">x</button>
+    </div>
+    <div class="modal-hint">Click inside the box, then press Cmd+A to select all, then Cmd+C to copy.</div>
+    <textarea class="modal-textarea" id="modalText" readonly onclick="this.select()"></textarea>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="downloadPDF()">Download PDF</button>
+      <button class="btn-dark" onclick="closeModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const AUDIT_STEPS = ["Scraping website","Researching keywords","Analyzing on-page factors","Checking local SEO","Writing your report"];
+const CONTENT_TYPES = [
+  { id:"blog",    label:"Blog Post",              desc:"Full SEO-optimized article targeting a top keyword" },
+  { id:"meta",    label:"Meta Descriptions",      desc:"Optimized title tags and meta for 5 key pages" },
+  { id:"service", label:"Service Page Copy",      desc:"Rewritten service page with headline and CTA" },
+  { id:"faq",     label:"FAQ Section",            desc:"8 keyword-rich Q&A pairs for voice search" },
+  { id:"gbp",     label:"Google Business Profile",desc:"Optimized GBP description and 3 posts" },
+];
+
+let currentReport = null;
+let contentData = {};
+let stepTimer = null;
+let currentStepIdx = 0;
+let doneSteps = [];
+let genIdx = null;
+let expandedIdx = null;
+
+// Step animation
+function startSteps(bizName) {
+  document.getElementById("loadingTitle").textContent = "Analyzing " + bizName + "...";
+  const container = document.getElementById("stepsContainer");
+  container.innerHTML = AUDIT_STEPS.map((s,i) => `<span class="step" id="step${i}">${s}</span>`).join("");
+  currentStepIdx = 0; doneSteps = [];
+  stepTimer = setInterval(() => {
+    if (currentStepIdx > 0) document.getElementById("step"+(currentStepIdx-1)).className = "step done";
+    if (currentStepIdx < AUDIT_STEPS.length) {
+      document.getElementById("step"+currentStepIdx).className = "step active";
+      currentStepIdx++;
+    } else { clearInterval(stepTimer); }
+  }, 8000);
+}
+function stopSteps() {
+  clearInterval(stepTimer);
+  AUDIT_STEPS.forEach((_,i) => {
+    const el = document.getElementById("step"+i);
+    if (el) el.className = "step done";
+  });
+}
+
+// Run audit
+async function runAudit() {
+  const bizName = document.getElementById("bizName").value.trim();
+  const bizType = document.getElementById("bizType").value;
+  const bizUrl  = document.getElementById("bizUrl").value.trim();
+  const bizCity = document.getElementById("bizCity").value.trim();
+  const bizDesc = document.getElementById("bizDesc").value.trim();
+  const errBox  = document.getElementById("errorBox");
+
+  errBox.style.display = "none";
+  if (!bizName || !bizType || !bizUrl || !bizCity) {
+    errBox.textContent = "Please fill in Business Name, Industry, Website URL, and Location.";
+    errBox.style.display = "block"; return;
+  }
+
+  document.getElementById("formSection").style.display = "none";
+  document.getElementById("loadingSection").style.display = "block";
+  document.getElementById("reportSection").style.display = "none";
+  startSteps(bizName);
+
+  try {
+    const res = await fetch("/api/audit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bizName, bizType, websiteUrl: bizUrl, location: bizCity, bizDesc }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || data.error) throw new Error(data.error || "Audit failed");
+
+    stopSteps();
+    currentReport = data.report;
+    renderReport(data.report, data.scrapeSuccess);
+    initContentCards();
+
+  } catch (err) {
+    stopSteps();
+    document.getElementById("formSection").style.display = "block";
+    document.getElementById("loadingSection").style.display = "none";
+    errBox.textContent = "Error: " + err.message;
+    errBox.style.display = "block";
+  }
+}
+
+// Render report
+function renderReport(r, scrapeSuccess) {
+  document.getElementById("loadingSection").style.display = "none";
+  document.getElementById("reportSection").style.display = "block";
+
+  // Scrape badge
+  const badge = document.getElementById("scrapeBadge");
+  badge.innerHTML = scrapeSuccess
+    ? '<div class="scrape-badge success">Website successfully scraped - audit based on real data</div>'
+    : '<div class="scrape-badge failed">Could not scrape website - audit based on provided details</div>';
+
+  document.getElementById("rptBizName").textContent = r.bizName;
+  document.getElementById("rptUrl").textContent = r.bizUrl;
+  document.getElementById("rptMeta").textContent = (r.bizCity || "") + " - " + (r.bizType || "");
+  document.getElementById("rptDate").textContent = new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+
+  const sc = r.overallScore || 0;
+  const scoreEl = document.getElementById("rptScore");
+  scoreEl.textContent = sc;
+  const color = sc < 40 ? "#ff2bd6" : sc < 70 ? "#ff6a00" : "#00eaff";
+  scoreEl.style.color = color;
+  document.getElementById("rptGrade").textContent = r.scoreLabel || "";
+  document.getElementById("rptGrade").style.color = color;
+
+  const body = document.getElementById("reportBody");
+  body.innerHTML = `
+    ${section("01","Executive Summary", `<div class="body-text">${esc(r.executiveSummary)}</div>`)}
+    ${section("02","Keyword Opportunities", `<div class="body-text">${esc(r.keywordAnalysis)}</div>`)}
+    ${section("03","On-Page SEO Issues", tagsHtml(r.onPageIssues))}
+    ${section("04","Local SEO Analysis", `<div class="body-text">${esc(r.localSEO)}</div>`)}
+    ${section("05","Competitor Gaps", `<div class="body-text">${esc(r.competitorGaps)}</div>`)}
+    ${section("06","Content Strategy", `<div class="body-text">${esc(r.contentStrategy)}</div>`)}
+    ${section("07","Priority Action Items", actionsHtml(r.priorityActions))}
+    ${section("08","Expected Timeline", `<div class="body-text">${esc(r.timelineEstimate)}</div>`)}
+    ${r.scrapedData ? section("09","Raw Site Data", rawDataHtml(r.scrapedData)) : ""}
+  `;
+}
+
+function section(num, title, inner) {
+  return `<div class="section-block"><div class="section-heading"><div class="section-num">${num}</div><div class="section-title">${title}</div></div>${inner}</div>`;
+}
+function tagsHtml(issues) {
+  if (!issues) return "";
+  const crit = (issues.critical||[]).map(t=>`<span class="tag tag-red">${esc(t)}</span>`).join("");
+  const warn = (issues.warnings||[]).map(t=>`<span class="tag tag-yellow">${esc(t)}</span>`).join("");
+  const pos  = (issues.positives||[]).map(t=>`<span class="tag tag-green">${esc(t)}</span>`).join("");
+  return `<div class="tags">${crit}${warn}${pos}</div>`;
+}
+function actionsHtml(actions) {
+  return `<div class="action-items">${(actions||[]).map((a,i)=>`<div class="action-item"><span class="action-num">${i+1}</span><span>${esc(a)}</span></div>`).join("")}</div>`;
+}
+function rawDataHtml(d) {
+  return `<div class="body-text" style="font-size:12px;font-family:monospace">${esc(JSON.stringify(d,null,2))}</div>`;
+}
+function esc(s) {
+  if (!s) return "";
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+// Tab switching
+function switchTab(tab, btn) {
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  document.getElementById("auditTab").style.display = tab === "audit" ? "block" : "none";
+  document.getElementById("contentTab").style.display = tab === "content" ? "block" : "none";
+}
+
+// Content cards
+function initContentCards() {
+  contentData = {};
+  expandedIdx = null;
+  const container = document.getElementById("contentCards");
+  container.innerHTML = CONTENT_TYPES.map((ct, i) => contentCardHtml(ct, i)).join("");
+}
+
+function contentCardHtml(ct, i) {
+  const isReady = !!contentData[ct.id];
+  const isGen   = genIdx === i;
+  const isExp   = expandedIdx === i;
+  return `
+    <div class="content-card ${isReady ? "ready" : ""}" id="contentCard${i}">
+      <div class="content-card-header ${isReady ? "tinted" : "white"}" onclick="${isReady ? `toggleExpand(${i})` : ""}">
+        <div class="content-card-info">
+          <div class="content-card-num ${isReady ? "ready" : "pending"}">${String(i+1).padStart(2,"0")}</div>
+          <div>
+            <div class="content-card-label">${ct.label}</div>
+            <div class="content-card-desc">${ct.desc}</div>
+          </div>
+        </div>
+        <div class="content-card-actions">
+          ${isReady ? '<span class="ready-badge">Ready</span>' : ""}
+          ${isGen ? '<div class="mini-spinner"></div>' : `<button class="btn-generate ${isReady ? "outline" : ""}" onclick="event.stopPropagation();generateContent(${i})" ${genIdx !== null ? "disabled" : ""}>${isReady ? "Regenerate" : "Generate"}</button>`}
+          ${isReady ? `<span class="expand-icon">${isExp ? "^" : "v"}</span>` : ""}
+        </div>
+      </div>
+      ${isReady && isExp ? `<div class="content-card-body"><div class="divider"></div>${renderContentData(ct.id, contentData[ct.id])}<div class="copy-btn"><button class="btn-secondary" onclick="copyJSON(${i})">Copy as JSON</button></div></div>` : ""}
+    </div>`;
+}
+
+function renderContentData(id, d) {
+  if (!d) return "";
+  if (id === "blog") return `
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div><div class="field-label">H1 Title</div><div class="field-box">${esc(d.title)}</div></div>
+      <div><div class="field-label">Meta Description</div><div class="field-box">${esc(d.metaDescription)}</div></div>
+      <div><div class="field-label">Article Body</div><div class="field-box scroll">${esc(d.body)}</div></div>
+    </div>`;
+  if (id === "meta") return (d.pages||[]).map(p=>`<div class="meta-page"><div class="meta-page-name">${esc(p.page)}</div><div class="field-label">Meta Title</div><div style="font-size:13px;margin-bottom:8px">${esc(p.metaTitle)}</div><div class="field-label">Meta Description</div><div style="font-size:13px">${esc(p.metaDescription)}</div></div>`).join("");
+  if (id === "service") return `
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div><div class="field-label">Headline</div><div class="field-box">${esc(d.headline)}</div></div>
+      <div><div class="field-label">Page Body</div><div class="field-box scroll">${esc(d.body)}</div></div>
+      <div><div class="field-label">Call to Action</div><div class="field-box">${esc(d.cta)}</div></div>
+    </div>`;
+  if (id === "faq") return (d.faqs||[]).map(f=>`<div class="faq-item"><div class="faq-q">Q: ${esc(f.question)}</div><div class="faq-a">${esc(f.answer)}</div></div>`).join("");
+  if (id === "gbp") return `
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div><div class="field-label">GBP Description</div><div class="field-box">${esc(d.description)}</div></div>
+      ${(d.posts||[]).map((p,i)=>`<div><div class="field-label">GBP Post ${i+1}</div><div class="field-box">${esc(p.title+"\n\n"+p.body)}</div></div>`).join("")}
+    </div>`;
+  return "";
+}
+
+async function generateContent(i) {
+  if (!currentReport) return;
+  genIdx = i;
+  document.getElementById("contentError").style.display = "none";
+  refreshCards();
+
+  const ct = CONTENT_TYPES[i];
+  try {
+    const res = await fetch("/api/content", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contentType: ct.id,
+        bizName: currentReport.bizName,
+        bizType: currentReport.bizType,
+        bizUrl:  currentReport.bizUrl,
+        bizCity: currentReport.bizCity,
+        keywordAnalysis: currentReport.keywordAnalysis,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error);
+    contentData[ct.id] = data.data;
+    expandedIdx = i;
+
+    // Update badge count
+    const count = Object.keys(contentData).length;
+    document.getElementById("contentTabBtn").innerHTML =
+      `Content Generator<span class="tab-badge">${count}</span>`;
+
+  } catch (err) {
+    const errEl = document.getElementById("contentError");
+    errEl.textContent = "Failed to generate " + ct.label + ": " + err.message;
+    errEl.style.display = "block";
+  } finally {
+    genIdx = null;
+    refreshCards();
+  }
+}
+
+function toggleExpand(i) {
+  expandedIdx = expandedIdx === i ? null : i;
+  refreshCards();
+}
+
+function refreshCards() {
+  const container = document.getElementById("contentCards");
+  container.innerHTML = CONTENT_TYPES.map((ct, i) => contentCardHtml(ct, i)).join("");
+}
+
+function copyJSON(i) {
+  const ct = CONTENT_TYPES[i];
+  const d = contentData[ct.id];
+  if (!d) return;
+  const ta = document.createElement("textarea");
+  ta.value = JSON.stringify(d, null, 2);
+  document.body.appendChild(ta); ta.select();
+  document.execCommand("copy");
+  document.body.removeChild(ta);
+}
+
+// Plain text report
+function buildPlainText(r) {
+  return [
+    "SEO AUDIT REPORT -- " + r.bizName,
+    "Website: " + r.bizUrl,
+    "Date: " + new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}),
+    "Score: " + r.overallScore + "/100 (" + r.scoreLabel + ")",
+    "", "EXECUTIVE SUMMARY", r.executiveSummary,
+    "", "KEYWORD OPPORTUNITIES", r.keywordAnalysis,
+    "", "ON-PAGE ISSUES",
+    "Critical: " + (r.onPageIssues?.critical||[]).join(", "),
+    "Warnings: " + (r.onPageIssues?.warnings||[]).join(", "),
+    "Positives: " + (r.onPageIssues?.positives||[]).join(", "),
+    "", "LOCAL SEO", r.localSEO,
+    "", "COMPETITOR GAPS", r.competitorGaps,
+    "", "CONTENT STRATEGY", r.contentStrategy,
+    "", "PRIORITY ACTIONS", ...(r.priorityActions||[]).map((a,i)=>(i+1)+". "+a),
+    "", "TIMELINE", r.timelineEstimate,
+  ].join("\n");
+}
+
+function openModal() {
+  if (!currentReport) return;
+  document.getElementById("modalText").value = buildPlainText(currentReport);
+  document.getElementById("modalOverlay").classList.add("show");
+}
+function closeModal() {
+  document.getElementById("modalOverlay").classList.remove("show");
+}
+
+// PDF
+async function downloadPDF() {
+  if (!currentReport) return;
+  const errEl = document.getElementById("pdfError");
+  errEl.style.display = "none";
+  const r = currentReport;
+
+  try {
+    const JsPDF = window.jspdf.jsPDF;
+    const doc = new JsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+    const pageW=210, pageH=297, mg=18, cw=pageW-mg*2;
+    let y = 0;
+    const newPage = () => { doc.addPage(); y = mg; };
+    const check = (n) => { if (y+(n||8) > pageH-mg) newPage(); };
+
+    doc.setFillColor(10,10,26); doc.rect(0,0,pageW,22,"F");
+    doc.setFont("helvetica","bold"); doc.setFontSize(13); doc.setTextColor(255,255,255);
+    doc.text("RankReady", mg, 14);
+    doc.setFontSize(8); doc.setTextColor(150,150,150);
+    doc.text("AI SEO AUDIT REPORT", pageW-mg, 14, {align:"right"});
+    y = 30;
+
+    doc.setFontSize(20); doc.setFont("helvetica","bold"); doc.setTextColor(10,10,26);
+    doc.text(r.bizName, mg, y); y += 7;
+    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.setTextColor(90,90,122);
+    doc.text((r.bizUrl||"") + "  |  " + (r.bizCity||"") + "  |  " + (r.bizType||""), mg, y); y += 5;
+    doc.text(new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}), mg, y); y += 8;
+
+    const sc = r.overallScore||0;
+    const scRgb = sc<40?[255,43,214]:sc<70?[255,106,0]:[0,234,255];
+    doc.setFillColor(...scRgb);
+    doc.roundedRect(mg, y, 48, 13, 3, 3, "F");
+    doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(255,255,255);
+    doc.text("Score: "+sc+" / 100", mg+4, y+8.5);
+    y += 20;
+    doc.setDrawColor(200,200,232); doc.line(mg, y, pageW-mg, y); y += 8;
+
+    const writeSection = (title, text) => {
+      check(18);
+      doc.setFillColor(240,240,255); doc.rect(mg, y, cw, 8, "F");
+      doc.setFont("helvetica","bold"); doc.setFontSize(8.5); doc.setTextColor(30,2,255);
+      doc.text(title.toUpperCase(), mg+3, y+5.5); y += 12;
+      doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(18,18,30);
+      const lines = doc.splitTextToSize(text||"", cw);
+      lines.forEach(l => { check(5); doc.text(l, mg, y); y += 5; });
+      y += 4;
+    };
+
+    const writeActions = (title, items) => {
+      check(18);
+      doc.setFillColor(240,240,255); doc.rect(mg, y, cw, 8, "F");
+      doc.setFont("helvetica","bold"); doc.setFontSize(8.5); doc.setTextColor(30,2,255);
+      doc.text(title.toUpperCase(), mg+3, y+5.5); y += 12;
+      const lh=5, bx=6, tx=mg+10, tw=cw-12;
+      (items||[]).forEach((action, i) => {
+        doc.setFontSize(9);
+        const ls = doc.splitTextToSize(action, tw);
+        const h = Math.max(bx, ls.length*lh)+5;
+        check(h);
+        doc.setFillColor(224,224,255); doc.rect(mg, y, bx, bx, "F");
+        doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(30,2,255);
+        doc.text(String(i+1), mg+1.8, y+4.2);
+        doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(18,18,30);
+        ls.forEach((l, li) => doc.text(l, tx, y+4.2+li*lh));
+        y += h;
+      });
+    };
+
+    const writeTagSection = (title, issues) => {
+      check(18);
+      doc.setFillColor(240,240,255); doc.rect(mg, y, cw, 8, "F");
+      doc.setFont("helvetica","bold"); doc.setFontSize(8.5); doc.setTextColor(30,2,255);
+      doc.text(title.toUpperCase(), mg+3, y+5.5); y += 12;
+      const grp = (lbl, items, rgb) => {
+        if (!items||!items.length) return;
+        doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(...rgb);
+        check(5); doc.text(lbl, mg, y); y += 5;
+        items.forEach(item => {
+          doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(18,18,30);
+          const ls = doc.splitTextToSize("- "+item, cw-4);
+          ls.forEach(l => { check(5); doc.text(l, mg+3, y); y += 4.5; });
+        });
+        y += 2;
+      };
+      grp("Critical Issues", issues.critical, [192,0,150]);
+      grp("Warnings",        issues.warnings,  [184,134,0]);
+      grp("Positives",       issues.positives, [0,100,60]);
+      y += 2;
+    };
+
+    writeSection("Executive Summary",     r.executiveSummary);
+    writeSection("Keyword Opportunities", r.keywordAnalysis);
+    writeTagSection("On-Page SEO Issues", r.onPageIssues||{});
+    writeSection("Local SEO Analysis",    r.localSEO);
+    writeSection("Competitor Gaps",       r.competitorGaps);
+    writeSection("Content Strategy",      r.contentStrategy);
+    writeActions("Priority Action Items", r.priorityActions);
+    writeSection("Timeline and Results",  r.timelineEstimate);
+
+    const total = doc.getNumberOfPages();
+    for (let i=1; i<=total; i++) {
+      doc.setPage(i);
+      doc.setFillColor(10,10,26); doc.rect(0, pageH-10, pageW, 10, "F");
+      doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(100,100,120);
+      doc.text("Generated by RankReady AI SEO Audit Tool", mg, pageH-4);
+      doc.text("Page "+i+" of "+total, pageW-mg, pageH-4, {align:"right"});
+    }
+
+    const filename = "SEO-Audit-" + (r.bizName||"report").replace(/\s+/g,"-") + ".pdf";
+    const uri = doc.output("datauristring");
+    const a = document.createElement("a");
+    a.href = uri; a.download = filename; a.target = "_blank";
+    document.body.appendChild(a); a.click();
+    setTimeout(() => document.body.removeChild(a), 100);
+
+  } catch(e) {
+    errEl.textContent = "PDF generation failed: " + e.message;
+    errEl.style.display = "block";
+  }
+}
+
+function resetForm() {
+  currentReport = null; contentData = {}; genIdx = null; expandedIdx = null;
+  document.getElementById("formSection").style.display = "block";
+  document.getElementById("loadingSection").style.display = "none";
+  document.getElementById("reportSection").style.display = "none";
+  document.getElementById("errorBox").style.display = "none";
+  document.getElementById("contentTabBtn").textContent = "Content Generator";
+  switchTab("audit", document.querySelector(".tab-btn"));
+}
+</script>
+</body>
+</html>
