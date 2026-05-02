@@ -1180,12 +1180,23 @@ function downloadProgressReportPDF() {
   if (d.clientUrl) { doc.setFontSize(10); doc.setTextColor(...muted); doc.text(d.clientUrl, margin, 100); }
 
   const cardY = 118;
-  doc.setFillColor(0, 40, 60); doc.roundedRect(margin, cardY, (contentW / 2) - 4, 36, 3, 3, "F");
-  doc.setDrawColor(...cyan); doc.setLineWidth(0.4); doc.roundedRect(margin, cardY, (contentW / 2) - 4, 36, 3, 3, "S");
-  doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(...cyan);
-  doc.text("TOP WIN THIS MONTH", margin + 4, cardY + 8);
-  doc.setFontSize(9.5); doc.setFont("helvetica", "normal"); doc.setTextColor(...white);
-  doc.splitTextToSize(d.topWin || "", (contentW / 2) - 12).slice(0, 3).forEach((l, i) => doc.text(l, margin + 4, cardY + 16 + i * 6));
+const cardY = 118;
+const cardH = 50;
+
+doc.setFillColor(0, 40, 60); doc.roundedRect(margin, cardY, (contentW / 2) - 4, cardH, 3, 3, "F");
+doc.setDrawColor(...cyan); doc.setLineWidth(0.4); doc.roundedRect(margin, cardY, (contentW / 2) - 4, cardH, 3, 3, "S");
+doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(...cyan);
+doc.text("TOP WIN THIS MONTH", margin + 4, cardY + 8);
+doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(...white);
+doc.splitTextToSize(d.topWin || "", (contentW / 2) - 12).slice(0, 5).forEach((l, i) => doc.text(l, margin + 4, cardY + 16 + i * 6));
+
+const watchX = margin + (contentW / 2) + 4;
+doc.setFillColor(50, 10, 40); doc.roundedRect(watchX, cardY, (contentW / 2) - 4, cardH, 3, 3, "F");
+doc.setDrawColor(...magenta); doc.roundedRect(watchX, cardY, (contentW / 2) - 4, cardH, 3, 3, "S");
+doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(...magenta);
+doc.text("WATCH ITEM", watchX + 4, cardY + 8);
+doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(...white);
+doc.splitTextToSize(d.watchItem || "", (contentW / 2) - 12).slice(0, 5).forEach((l, i) => doc.text(l, watchX + 4, cardY + 16 + i * 6));
 
   const watchX = margin + (contentW / 2) + 4;
   doc.setFillColor(50, 10, 40); doc.roundedRect(watchX, cardY, (contentW / 2) - 4, 36, 3, 3, "F");
