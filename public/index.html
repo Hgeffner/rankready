@@ -1188,63 +1188,53 @@ function downloadProgressReportPDF() {
   doc.setFillColor(...white); doc.rect(0, 0, pageW, pageH, "F");
 
   // Top blue bar
-  doc.setFillColor(...blue); doc.rect(0, 0, pageW, 56, "F");
+  doc.setFillColor(...blue); doc.rect(0, 0, pageW, 64, "F");
 
-  // Agency name in bar
-  doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(...white);
-  doc.text("SPARK SOCIAL CREATIVE", margin, 20);
-  doc.setFontSize(8.5); doc.setFont("helvetica", "normal"); doc.setTextColor(200, 200, 240);
-  doc.text("Monthly SEO Progress Report", margin, 29);
+  // Agency name + report type in bar
+  doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(180, 180, 230);
+  doc.text("SPARK SOCIAL CREATIVE", margin, 18);
+  doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.setTextColor(...white);
+  doc.text("Monthly SEO Progress Report", margin, 30);
+  doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(200, 200, 240);
+  doc.text("Prepared for " + (d.clientName || "Client") + "  ·  " + (d.reportMonth || ""), margin, 40);
 
-  // Report type label bottom of bar
-  doc.setFontSize(7); doc.setFont("helvetica", "bold"); doc.setTextColor(180, 180, 220);
-  doc.text("PREPARED FOR", pageW - margin, 20, { align: "right" });
-  doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(...white);
-  doc.text(d.clientName || "Client", pageW - margin, 29, { align: "right" });
-
-  // Large client name block
-  y = 80;
-  doc.setFontSize(7.5); doc.setFont("helvetica", "bold"); doc.setTextColor(...blue);
-  doc.text("CLIENT", margin, y); y += 7;
-  doc.setFontSize(28); doc.setFont("helvetica", "bold"); doc.setTextColor(...ink);
+  // Large client name
+  y = 88;
+  doc.setFontSize(30); doc.setFont("helvetica", "bold"); doc.setTextColor(...ink);
   const nameLines = doc.splitTextToSize(d.clientName || "Report", contentW);
-  nameLines.forEach(l => { doc.text(l, margin, y); y += 12; });
+  nameLines.slice(0, 2).forEach(l => { doc.text(l, margin, y); y += 13; });
 
-  y += 2;
-  doc.setFontSize(12); doc.setFont("helvetica", "normal"); doc.setTextColor(...muted);
-  doc.text(d.reportMonth || "", margin, y); y += 6;
+  doc.setFontSize(11); doc.setFont("helvetica", "normal"); doc.setTextColor(...muted);
+  doc.text(d.reportMonth || "", margin, y); y += 7;
   if (d.clientUrl) {
     doc.setFontSize(9); doc.setTextColor(...blue);
-    doc.text(d.clientUrl, margin, y); y += 6;
+    doc.text(d.clientUrl, margin, y); y += 7;
   }
 
   // Divider
-  y += 8;
+  y += 10;
   doc.setDrawColor(...rule); doc.setLineWidth(0.4);
-  doc.line(margin, y, pageW - margin, y); y += 12;
+  doc.line(margin, y, pageW - margin, y); y += 14;
 
-  // Top Win and Watch Item as clean text blocks side by side
-  const colMid = pageW / 2 + 2;
-  const halfW = contentW / 2 - 6;
-
-  // Win block
+  // Top Win block (full width, stacked)
   doc.setFontSize(7); doc.setFont("helvetica", "bold"); doc.setTextColor(...green);
-  doc.text("TOP WIN THIS MONTH", margin, y); 
+  doc.text("TOP WIN THIS MONTH", margin, y); y += 6;
+  doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(...body);
+  const winLines = doc.splitTextToSize(d.topWin || "", contentW);
+  winLines.slice(0, 4).forEach(l => { doc.text(l, margin, y); y += 5.5; });
+
+  y += 8;
+  doc.setDrawColor(...rule); doc.setLineWidth(0.3);
+  doc.line(margin, y, pageW - margin, y); y += 14;
+
+  // Watch Item block (full width, stacked)
   doc.setFontSize(7); doc.setFont("helvetica", "bold"); doc.setTextColor(...red);
-  doc.text("WATCH ITEM", colMid, y); y += 5;
+  doc.text("WATCH ITEM", margin, y); y += 6;
+  doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(...body);
+  const watchLines = doc.splitTextToSize(d.watchItem || "", contentW);
+  watchLines.slice(0, 4).forEach(l => { doc.text(l, margin, y); y += 5.5; });
 
-  const winLines = doc.splitTextToSize(d.topWin || "", halfW);
-  const watchLines = doc.splitTextToSize(d.watchItem || "", halfW);
-  const maxLines = Math.max(winLines.length, watchLines.length);
-
-  for (let i = 0; i < maxLines && i < 6; i++) {
-    doc.setFontSize(9.5); doc.setFont("helvetica", "normal"); doc.setTextColor(...body);
-    if (winLines[i]) doc.text(winLines[i], margin, y);
-    if (watchLines[i]) doc.text(watchLines[i], colMid, y);
-    y += 5.5;
-  }
-
-  // Bottom cover accent
+  // Bottom cover bar
   doc.setFillColor(...blue);
   doc.rect(0, pageH - 20, pageW, 20, "F");
   doc.setFontSize(7.5); doc.setFont("helvetica", "normal"); doc.setTextColor(200, 200, 240);
